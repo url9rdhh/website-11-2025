@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion et Inscription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+        * { 
+          box-sizing: border-box; 
+        }
+    
+        body {
+          background: #f6f5f7;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          font-family: 'Montserrat', sans-serif;
+          height: 100vh;
+          margin: 0;
+          overflow: hidden;
+        }
+        
+        .role-selection {
+          text-align: center;
+          background: white;
+          padding: 40px 60px;
+          border-radius: 15px;
+          box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+    
+        .role-selection h2 {
+          margin-bottom: 25px; 
+        }
+    
+        .role-selection button {
+          border: none;
+          border-radius: 30px;
+          padding: 15px 35px;
+          margin: 10px;
+          cursor: pointer;
+          font-size: 16px;
+          font-weight: bold;
+          color: white;
+          transition: all 0.3s ease;
+        }
+    
+        .role-selection button.doctor {
+          background: #3b82f6; 
+        }
+    
+        .role-selection button.doctor:hover { 
+          box-shadow: 0 8px 18px rgba(37, 99, 235, 0.45);  
+          transform: translateY(-3px); 
+          background: #fdfdfd; 
+          color: #3b82f6; 
+          border: #3b82f6 1px solid;
+        }
+    
+        .role-selection button.patient {
+          background: #10b981; 
+        }
+    
+        .role-selection button.patient:hover { 
+          box-shadow: 0 8px 18px rgba(16, 185, 129, 0.35);
+          transform: translateY(-3px);  
+          color: #059669; 
+          background-color: #fdfdfd; 
+          border: #059669 1px solid;
+        }
+    
+        .container {
+          background-color: #fff;
+          border-radius: 10px;
+          box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+          position: relative;
+          overflow: hidden;
+          width: 850px;
+          max-width: 100%;
+          min-height: 520px;
+          display: none;
+        }
+    
+        form {
+          background-color: #FFFFFF;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          padding: 0 50px;
+          height: 100%;
+          text-align: center;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity .6s ease, transform .6s ease;
+        }
+    
+        .container.right-panel-active .sign-up-container form,
+        .container.show-login .sign-in-container form {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        .input-group {
+          position: relative; width: 100%; 
+        }
+    
+        .input-group i:not(.eye-toggle) {
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #888;
+          font-size: 16px;
+          pointer-events: none;
+        }
+        
+        .eye-toggle {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 18px;
+          color: #666;
+          cursor: pointer;
+          z-index: 3;
+          pointer-events: auto;
+        }
+        
+        .input-group.password input {
+          padding-right: 45px !important;
+        }
+        
+        input {
+          background-color: #eee;
+          border: 1px solid transparent;
+          padding: 12px 15px 12px 35px;
+          margin: 8px 0;
+          width: 100%;
+          border-radius: 8px;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+    
+        input:focus {
+          border: 1px solid #007bff;
+          outline: none;
+          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+          background-color: #fff;
+        }
+        
+        a {
+          padding: 10px;
+          font-size: 14px;
+        }
+        
+        .go-button {
+          border: none;
+          outline: none;
+          padding: 12px 45px;
+          border-radius: 25px;
+          margin-top: 10px;
+          background: linear-gradient(135deg, #3b82f6, #2563eb);
+          color: #fff;
+          font-size: 14px;
+          font-weight: 600;
+          letter-spacing: .5px;
+          cursor: pointer;
+          transition: all .25s ease;
+          box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+        }
+    
+        .go-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 18px rgba(37, 99, 235, 0.45);
+          background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+    
+        button:active { 
+          transform: scale(.96); 
+        }
+        
+        hr {
+          border: none;
+          height: 1px;
+          margin: -15px auto 15px auto;
+          width: 75%;
+          background: linear-gradient(to right, transparent, #2563eb, transparent);
+        }
+        
+        button.ghost {
+          background-color: transparent;
+          border: 2px solid rgba(255, 255, 255, 0.9);
+          color: #ffffff;
+          border-radius: 25px;
+          font-size: 13px;
+          font-weight: 600;
+          padding: 12px 45px;
+          text-transform: uppercase;
+          cursor: pointer;
+          backdrop-filter: blur(2px);
+          transition: all .4s ease;
+        }
+    
+        button.ghost:hover {
+          background: rgba(255, 255, 255, 0.95);
+          color: #1d4ed8;
+          border-color: rgba(255, 255, 255, 0);
+          box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35);
+        }
+        
+        .form-container {
+          position: absolute;
+          top: 0;
+          height: 100%;
+          transition: all 0.6s ease-in-out;
+        }
+    
+        .sign-in-container {
+          left: 0; width: 50%; z-index: 2; 
+        }
+    
+        .container.right-panel-active .sign-in-container { 
+          transform: translateX(100%); 
+        }
+        
+        .sign-up-container {
+          left: 0;
+          width: 50%;
+          opacity: 0;
+          z-index: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+          scrollbar-width: thin;
+        }
+    
+        .container.right-panel-active 
+        .sign-up-container {
+          transform: translateX(100%);
+          opacity: 1; 
+          z-index: 5; 
+          animation: show 0.6s;
+        }
+        
+        .sign-up-container form {
+          height: auto;
+          padding-bottom: 30px;
+        }
+        
+        @keyframes show {
+          0%,49.99%{opacity:0;z-index:1;}
+          50%,100%{opacity:1;z-index:5;}
+        }
+        
+        .overlay-container {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          width: 50%;
+          height: 100%;
+          overflow: hidden;
+          transition: transform 0.6s ease-in-out;
+          z-index: 100;
+        }
+    
+        .container.right-panel-active 
+        .overlay-container {
+          transform: translateX(-100%); 
+        }
+    
+        .overlay {
+          position: relative;
+          left: -100%;
+          height: 100%;
+          width: 200%;
+          color: #fff;
+          background-repeat: no-repeat;
+          background-size: cover;
+          background-position: center;
+          transform: translateX(0);
+          transition: transform 0.6s ease-in-out, background-image 0.6s ease-in-out;
+        }
+    
+        .overlay::before {
+          content: "";
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: rgba(0, 26, 255, 0.518);
+          backdrop-filter: brightness(0.9);
+        }
+    
+        .container.right-panel-active .overlay {
+          transform: translateX(50%); 
+        }
+        
+        .overlay-panel {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          padding: 0 40px;
+          text-align: center;
+          top: 0;
+          height: 100%;
+          width: 50%;
+          z-index: 1;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity .7s ease, transform .7s ease;
+        }
+    
+        .container.right-panel-active .overlay-left,
+        .container.show-login .overlay-right {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        .overlay-left { 
+          transform: translateX(-20%); 
+        }
+    
+        .container.right-panel-active .overlay-left {
+          transform: translateX(0); 
+        }
+    
+        .overlay-right { 
+          right: 0; transform: translateX(0); 
+        }
+    
+        .container.right-panel-active .overlay-right {
+          transform: translateX(20%); 
+        }
+        
+        .overlay h1, .overlay p, .overlay button {
+          z-index: 2;
+          position: relative;
+        }
+        
+        .back-to-role {
+          position: absolute;
+          top: 15px;
+          left: 20px;
+          font-size: 14px;
+          color: #3b82f6;
+          text-decoration: none;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+          z-index: 10;
+        }
+    
+        .back-to-role i {
+          font-size: 13px;
+          transition: transform 0.3s ease;
+        }
+    
+        .back-to-role:hover i { 
+          transform: translateX(-4px); 
+        }
+    
+        .container.show-login .back-to-role {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        
+        .input-warning {
+          color: red;
+          font-size: 12px;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          margin-top: -4px;
+          pointer-events: none;
+          white-space: nowrap !important;
+        }
+        
+        input.invalid {
+          border-color: red !important;
+        }
+    
+        .input-group {
+          position: relative;
+          margin-bottom: 0px; 
+        }
+        
+        .input-group.has-warning {
+          margin-bottom: 10px; 
+        }
+
+    </style>
+</head>
+<body>
+
+  <div class="role-selection" id="roleSelection">
+    <h2>Choisissez votre rôle</h2>
+    <button class="doctor" id="doctorBtn"><i class="fas fa-user-md"></i> Je suis un médecin</button>
+    <button class="patient" id="patientBtn"><i class="fas fa-user"></i> Je suis un patient</button>
+  </div>
+  <div class="container" id="container">
+    <a href="#" class="back-to-role" id="backToRole">
+        <i class="fas fa-arrow-left"></i> Changer le rôle
+    </a>
+    <div class="form-container sign-up-container">
+      <form id="signupForm" action="#">
+        <h1>Créer un compte</h1>
+        <hr>
+        <div id="signupFields"></div>
+        <button class="go-button">S'inscrire</button>
+      </form>
+    </div>
+    <div class="form-container sign-in-container">
+      <form id="loginForm" action="#">
+        <h1>Se connecter</h1>
+        <hr>
+        <div id="loginFields"></div>
+        <a  href="#">Mot de passe oublié ?</a>
+        <button class="go-button">Connexion</button>
+      </form>
+    </div>
+    <div class="overlay-container">
+      <div class="overlay" id="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Bonjour !</h1>
+          <p>Entrez vos informations et commencez votre parcours avec nous</p>
+          <button class="ghost" id="signIn">Connexion</button>  
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>Content de vous revoir !</h1>
+          <p>Pour rester connecté, veuillez vous connecter avec vos informations personnelles</p>
+          <button class="ghost" id="signUp">Inscription</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="msgBox" style=" position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; font-weight: bold; display: none; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+
+  <script>
+  
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
+    const doctorBtn = document.getElementById('doctorBtn');
+    const patientBtn = document.getElementById('patientBtn');
+    const roleSelection = document.getElementById('roleSelection');
+    const signupFields = document.getElementById('signupFields');
+    const loginFields = document.getElementById('loginFields');
+    const overlay = document.getElementById('overlay');
+    const backToRole = document.getElementById('backToRole');
+    let currentRole = "";
+    signUpButton.addEventListener('click', () => {
+      container.classList.add("right-panel-active");
+      container.classList.remove("show-login");
+    });
+    
+    signInButton.addEventListener('click', () => {
+      container.classList.remove("right-panel-active");
+      container.classList.add("show-login");
+    });
+    function setDoctorForm() {
+      overlay.style.backgroundImage = "url('media/bg-dr.webp')";
+      signupFields.innerHTML = `
+        <div class="input-group"><i class="fas fa-id-card"></i><input type="text" placeholder="Numéro CPC"></div>
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" placeholder="Nom" ></div>
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" placeholder="Prénom" ></div>
+        <div class="input-group"><i class="fas fa-stethoscope"></i><input type="text" placeholder="Spécialité" ></div>
+        <div class="input-group"><i class="fas fa-hospital"></i><input type="text" placeholder="Hôpital"></div>
+        <div class="input-group"><i class="fas fa-envelope"></i><input type="email" placeholder="Email" ></div>
+        <div class="input-group"><i class="fas fa-phone"></i><input type="tel" placeholder="Numéro de téléphone" ></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Mot de passe"><i class="fas fa-eye eye-toggle"></i></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Confirmer le mot de passe" ></div>
+      `;
+    
+      loginFields.innerHTML = `
+        <div class="input-group"><i class="fas fa-id-card"></i><input type="text" placeholder="Numéro CPC"  ></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Mot de passe"><i class="fas fa-eye eye-toggle"></i></div>
+      `;
+    }
+    
+    function setPatientForm() {
+      overlay.style.backgroundImage = "url('media/bg.pt.webp')";
+      signupFields.innerHTML = `
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" placeholder="Nom"  ></div>
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" placeholder="Prénom"  ></div>
+        <div class="input-group"><i class="fas fa-calendar"></i><input type="date"  ></div>
+        <div class="input-group"><i class="fas fa-envelope"></i><input type="email" placeholder="Email"  ></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Mot de passe"><i class="fas fa-eye eye-toggle"></i></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Confirmer le mot de passe"  ></div>
+      `;
+    
+      loginFields.innerHTML = `
+        <div class="input-group"><i class="fas fa-envelope"></i><input type="text" placeholder="Email"  ></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Mot de passe"><i class="fas fa-eye eye-toggle"></i></div>
+      `;
+    }
+    doctorBtn.addEventListener('click', () => {
+      currentRole = "doctor";
+      roleSelection.style.display = 'none';
+      container.style.display = 'block';
+      setDoctorForm();
+      container.classList.add("show-login");
+    });
+    
+    patientBtn.addEventListener('click', () => {
+      currentRole = "patient";
+      roleSelection.style.display = 'none';
+      container.style.display = 'block';
+      setPatientForm();
+      container.classList.add("show-login");
+    });
+    
+    backToRole.addEventListener('click', (e) => {
+      e.preventDefault();
+      container.classList.remove('right-panel-active', 'show-login');
+      container.style.display = 'none';
+      roleSelection.style.display = 'block';
+      roleSelection.classList.add('fade-in');
+    });
+   
+    function removeWarning(input) {
+      const group = input.parentNode;
+      const warning = group.querySelector('.input-warning');
+      if (warning) warning.remove();
+    
+      input.classList.remove('invalid');
+      group.classList.remove('has-warning'); 
+    }
+    
+    function createWarning(message, input) {
+      removeWarning(input);
+    
+      const span = document.createElement('span');
+      span.className = 'input-warning';
+      span.textContent = message;
+    
+      const group = input.parentNode;
+      group.appendChild(span);
+    
+      input.classList.add('invalid');
+      group.classList.add('has-warning');
+    }
+    
+    function validateInput(input) {
+      const val = input.value.trim();
+    
+      if (val === '') {
+        createWarning('Champ obligatoire', input);
+        return false;
+      }
+    
+      if (input.type === 'tel') {
+        if (!/^\d{10}$/.test(val)) {
+          createWarning('Numéro invalide (10 chiffres)', input);
+          return false;
+        }
+      }
+    
+      if (input.type === 'email') {
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!pattern.test(val)) {
+          createWarning('Email invalide', input);
+          return false;
+        }
+      }
+
+      if (input.placeholder === 'Mot de passe') {
+        if (val.length < 8) {
+          createWarning('Le mot de passe doit contenir au moins 8 caractères', input);
+          return false;
+        }
+      }
+    
+      if (input.placeholder === 'Confirmer le mot de passe') {
+        const password = signupFields.querySelector('input[placeholder="Mot de passe"]').value;
+        if (val !== password) {
+          createWarning('Les mots de passe ne correspondent pas', input);
+          return false;
+        }
+      }
+      removeWarning(input);
+      return true;
+    }
+
+    function validateSignupForm() {
+        const inputs = signupFields.querySelectorAll("input");
+        let valid = true;
+    
+        inputs.forEach(input => {
+            if (!validateInput(input)) valid = false;
+        });
+    
+        return valid;
+    }
+    
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+  
+      if (!validateSignupForm()) return;
+  
+      const inputs = signupFields.querySelectorAll("input");
+      const values = [...inputs].map(i => i.value.trim());
+  
+      let formData = new FormData();
+      let file = "";
+  
+      if (currentRole === "doctor") {
+          formData.append("cpc", values[0]);
+          formData.append("lastname", values[1]);
+          formData.append("firstname", values[2]);
+          formData.append("speciality", values[3]);
+          formData.append("hospital", values[4]);
+          formData.append("email", values[5]);
+          formData.append("phone", values[6]);
+          formData.append("password", values[7]);
+          file = "signup_doctor.php";
+      } else {
+          formData.append("lastname", values[0]);
+          formData.append("firstname", values[1]);
+          formData.append("birthdate", values[2]);
+          formData.append("email", values[3]);
+          formData.append("password", values[4]);
+          file = "signup_patient.php";
+      }
+  
+      fetch(file, {
+          method: "POST",
+          body: formData
+      })
+      .then(res => res.text())
+      .then(data => {
+            console.log("RESPONSE FROM PHP:", data); 
+  
+          if (data.trim() === "cpc_exists") { 
+              const cpcField = signupFields.querySelector('input[placeholder="Numéro CPC"]');
+              createWarning("Ce CPC existe déjà", cpcField);
+              return;
+          }
+  
+          if (data.trim() === "email_exists") { 
+              const emailField = signupFields.querySelector('input[type="email"]');
+              createWarning("Cet email est déjà utilisé", emailField);
+              return;
+          }
+  
+          if (data.trim() === "error") { 
+              showMsg("Erreur d'inscription. Veuillez réessayer.", "error");
+              return;
+          }
+  
+          if (data.trim() === "success") { 
+              showMsg("Compte créé avec succès", "success");
+              
+              const signInButton = document.getElementById('signIn'); 
+              if (signInButton) {
+                  signInButton.click(); 
+              } else {
+                  if (typeof container !== 'undefined') {
+                      container.classList.remove("right-panel-active");
+                  }
+              }
+              
+              return;
+          }
+  
+          showMsg("Erreur inconnue (Réponse PHP inattendue: " + data.trim() + ")", "error"); 
+      });
+    });
+
+    signupFields.addEventListener("input", (e) => {
+      const input = e.target;
+      removeWarning(input);
+  
+      if (input.type === "tel") {
+          input.value = input.value.replace(/\D/g, "").slice(0, 10);
+      }
+    });
+
+    signupFields.addEventListener("blur", (e) => {
+      validateInput(e.target);
+    }, true);
+
+    signupFields.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("eye-toggle")) return;
+  
+      const input = e.target.previousElementSibling;
+  
+      if (input.type === "password") {
+          input.type = "text";
+          e.target.classList.remove("fa-eye");
+          e.target.classList.add("fa-eye-slash");
+      } else {
+          input.type = "password";
+          e.target.classList.remove("fa-eye-slash");
+          e.target.classList.add("fa-eye");
+      }
+    });
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+  
+      const inputs = loginFields.querySelectorAll("input");
+      const values = [...inputs].map(i => i.value.trim());
+  
+      let formData = new FormData();
+      let file = "";
+  
+      if (currentRole === "doctor") {
+          formData.append("cpc", values[0]);
+          formData.append("password", values[1]);
+          file = "login_doctor.php";
+      } else {
+          formData.append("email", values[0]);
+          formData.append("password", values[1]);
+          file = "login_patient.php";
+      }
+  
+      fetch(file, {
+          method: "POST",
+          body: formData
+      })
+      .then(res => res.text())
+      .then(data => {
+  
+        if (data === "no_cpc") {
+            const cpcInput = loginFields.querySelector('input[placeholder="Numéro CPC"]');
+            createWarning("Ce CPC n'existe pas", cpcInput);
+            return;
+        }
+
+        if (data === "no_email") {
+            const emailInput = loginFields.querySelector('input[type="text"]');
+            createWarning("Cet email n'existe pas", emailInput);
+            return;
+        }
+
+        if (data === "wrong_password") {
+            const passInput = loginFields.querySelector('input[type="password"]');
+            createWarning("Mot de passe incorrect", passInput);
+            return;
+        }
+
+        if (data === "success") {
+            showMsg("Connexion réussie", "success");
+            setTimeout(() => {
+                if (currentRole === "doctor") {
+                    window.location.href = "/website_11_2025/doctor-portal/accueil.php";
+                } else {
+                    window.location.href = "nextpage.html";
+                }
+            }, 800);
+            return;
+        }
+
+        showMsg("Erreur inconnue", "error");
+      });
+    });
+
+    function showMsg(text, type = "success") {
+      const box = document.getElementById("msgBox");
+      box.style.background = type === "success" ? "#10b981" : "#dc2626";
+      
+      const successIconSVG = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>`;
+  
+      let content = text;
+      if (type === "success") {
+          content = successIconSVG + text;
+      }
+      
+      box.innerHTML = content;
+      box.style.display = "flex"; 
+      box.style.justifyContent = "center";
+      box.style.alignItems = "center"; 
+      
+      setTimeout(() => {
+        box.style.display = "none";
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
